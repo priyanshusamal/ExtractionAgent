@@ -7,6 +7,8 @@ namespace ExtractionAgent.Player
     [RequireComponent(typeof(Rigidbody))]
     public class PlayerController : MonoBehaviour
     {
+        [Header("References")]
+        [SerializeField] private Animator animator;
         //Movement Variables
         [Header("Movement Variables")]
         [SerializeField]private float moveSpeed = 5f;
@@ -38,6 +40,7 @@ namespace ExtractionAgent.Player
 
         private void Awake()
         {
+            animator = GetComponent<Animator>();
             rb = GetComponent<Rigidbody>();
             playerinputactions = new PlayerInputActions();
 
@@ -67,6 +70,7 @@ namespace ExtractionAgent.Player
         {
             MovePlayer();
             HandleJump();
+            PlayerAnimations();
         }
         private void Update()
         {
@@ -89,6 +93,7 @@ namespace ExtractionAgent.Player
             float speed = isCrouching ? crouchSpeed : moveSpeed;        //changes the speed when crouching 
             Vector3 movement = new Vector3(moveInput.x,0,0) * speed;
             rb.linearVelocity = new Vector3(movement.x,rb.linearVelocity.y,0);
+
         }
         private void HandleJump()
         {
@@ -118,16 +123,44 @@ namespace ExtractionAgent.Player
                 Debug.Log("isnotrollingchange to true");
                 isRolling = true;
                 rb.AddForce(new Vector3(moveInput.x,0,0)*rollForce,ForceMode.Impulse);
+                animator.SetTrigger("Sprint");
                 Debug.Log("performed");
-                Invoke(nameof(EndRoll),1f);                           //Adjusts the duration of the roll
+                EndRoll();
+                // Invoke(nameof(EndRoll),1f);                           //Adjusts the duration of the roll
             }
         }
         private void EndRoll()
         {
             isRolling = false;
         }
+        [SerializeField] private float rotSpeed = 5f;
+        [SerializeField] private float animationSpeed = 1f;
 
-
+        private void PlayerAnimations()
+        {
+            if(moveInput.x > 0)
+            {
+                Quaternion targetRotation = Quaternion.Euler(transform.rotation.x,90f,transform.rotation.z);
+                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation,Time.deltaTime*rotSpeed);   
+            }
+            else if(moveInput.x < 0)
+            {
+                Quaternion targetRotation = Quaternion.Euler(transform.rotation.x,270f,transform.rotation.z);
+                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation,Time.deltaTime*rotSpeed);
+            }
+            if(moveInput.x == 0)
+            {
+                animator.SetFloat("Movement",Mathf.Lerp(animator.GetFloat("Movement"),Mathf.Abs(moveInput.x),animationSpeed*Time.deltaTime));
+            }
+            else 
+            {
+                animator.SetFloat("Movement",Mathf.Lerp(animator.GetFloat("Movement"),Mathf.Abs(moveInput.x),animationSpeed*Time.deltaTime));
+            }
+            // if(isRolling)
+            // {
+                
+            // }
+        }
         private void Shoot()
         {
             if(currentAmmo > 0)
@@ -145,8 +178,20 @@ namespace ExtractionAgent.Player
 
         private bool IsGrounded()
         {
-            return Physics.Raycast(transform.position, Vector3.down, 1.1f);
+            return Physics.Raycast(transform.position, Vector3.down, 0.6f);
         }
-      
+        public void SetDir(float dir)
+        {
+            if(dir > 0)
+            {
+                Quaternion targetRotation = Quaternion.Euler(transform.rotation.x,90f,transform.rotation.z);
+                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation,Time.deltaTime*rotSpeed);   
+            }
+            else if(dir < 0)
+            {
+                Quaternion targetRotation = Quaternion.Euler(transform.rotation.x,270f,transform.rotation.z);
+                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation,Time.deltaTime*rotSpeed);
+            }
+        }
     }
 }
