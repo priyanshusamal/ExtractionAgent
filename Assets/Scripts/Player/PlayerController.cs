@@ -32,7 +32,8 @@ namespace ExtractionAgent.Player
         private Vector2 moveInput;
         private bool isJumping;
 
-        // private bool isGrounded;
+        [SerializeField]private bool isGrounded;
+        public float offsetRaycast = 1f;
         private bool isCrouching;
         private bool isRolling;
         private int currentAmmo;
@@ -74,6 +75,7 @@ namespace ExtractionAgent.Player
         }
         private void Update()
         {
+            isGrounded = IsGrounded();
             SlowMotion();
         }
 
@@ -178,7 +180,8 @@ namespace ExtractionAgent.Player
 
         private bool IsGrounded()
         {
-            return Physics.Raycast(transform.position, Vector3.down, 0.6f);
+            
+            return Physics.Raycast(transform.position, Vector3.down, offsetRaycast);
         }
         public void SetDir(float dir)
         {

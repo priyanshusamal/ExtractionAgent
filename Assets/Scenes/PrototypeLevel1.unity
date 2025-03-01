@@ -936,6 +936,8 @@ MonoBehaviour:
   bulletPrefab: {fileID: 5655654277407776244, guid: bd521f78d23b0204b9666dab34f12a2f, type: 3}
   bulletSpeed: 45
   maxAmmo: 10
+  isGrounded: 0
+  offsetRaycast: 1
   debugTransform: {fileID: 1762748865}
   rotSpeed: 10
   animationSpeed: 1
@@ -1007,7 +1009,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1620854665
 Transform:
   m_ObjectHideFlags: 0
@@ -1035,12 +1037,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58573950afcd51a4bb0802c5f909ace7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainCamera: {fileID: 1640184898}
-  gunPivot: {fileID: 1620854665}
-  playerTransform: {fileID: 5040472719452886282}
-  playerController: {fileID: 5672437211559694259}
-  cameraController: {fileID: 1640184901}
-  aimObject: {fileID: 1924418607}
 --- !u!65 &1620854667
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1156,14 +1152,14 @@ Camera:
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
-  m_projectionMatrixMode: 2
+  m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
   m_Iso: 200
   m_ShutterSpeed: 0.005
   m_Aperture: 16
   m_FocusDistance: 10
-  m_FocalLength: 20.78461
+  m_FocalLength: 50
   m_BladeCount: 5
   m_Curvature: {x: 2, y: 11}
   m_BarrelClipping: 0.25
@@ -1178,10 +1174,10 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60.000004
+  field of view: 60
   orthographic: 0
   orthographic size: 5
-  m_Depth: -1
+  m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -1196,25 +1192,21 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!224 &1640184899
-RectTransform:
+--- !u!4 &1640184899
+Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1640184896}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: -4.74, y: 1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -4.74, y: 1}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1640184900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1272,8 +1264,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 5040472719452886282}
-  followSpeed: 12
-  offset: {x: 0, y: 1.5, z: -10}
+  followSpeed: 1
+  offset: {x: 0, y: 2, z: -10}
   lookAheadMultiplier: 2
   lookAheadSmoothing: 0.1
 --- !u!114 &1640184902
@@ -4174,7 +4166,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!136 &5672437211559694258
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4219,6 +4211,8 @@ MonoBehaviour:
   bulletPrefab: {fileID: 5655654277407776244, guid: bd521f78d23b0204b9666dab34f12a2f, type: 3}
   bulletSpeed: 45
   maxAmmo: 10
+  isGrounded: 0
+  offsetRaycast: 1
   debugTransform: {fileID: 1762748865}
   rotSpeed: 10
   animationSpeed: 5
