@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,6 +9,7 @@ namespace ExtractionAgent.Player
     public class PlayerController : MonoBehaviour
     {
         [Header("References")]
+        private Camera cam;
         [SerializeField] private Animator animator;
         //Movement Variables
         [Header("Movement Variables")]
@@ -33,14 +35,13 @@ namespace ExtractionAgent.Player
         private bool isJumping;
 
         [SerializeField]private bool isGrounded;
-        public float offsetRaycast = 1f;
         private bool isCrouching;
         private bool isRolling;
         private int currentAmmo;
-        public GameObject debugTransform;
 
         private void Awake()
         {
+            cam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
             animator = GetComponent<Animator>();
             rb = GetComponent<Rigidbody>();
             playerinputactions = new PlayerInputActions();
@@ -75,8 +76,9 @@ namespace ExtractionAgent.Player
         }
         private void Update()
         {
-            isGrounded = IsGrounded();
             SlowMotion();
+            isGrounded = IsGrounded();
+            RotatePlayer();
         }
 
         private void SlowMotion()
@@ -135,33 +137,32 @@ namespace ExtractionAgent.Player
         {
             isRolling = false;
         }
-        [SerializeField] private float rotSpeed = 5f;
-        [SerializeField] private float animationSpeed = 1f;
 
         private void PlayerAnimations()
         {
-            if(moveInput.x > 0)
-            {
-                Quaternion targetRotation = Quaternion.Euler(transform.rotation.x,90f,transform.rotation.z);
-                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation,Time.deltaTime*rotSpeed);   
-            }
-            else if(moveInput.x < 0)
-            {
-                Quaternion targetRotation = Quaternion.Euler(transform.rotation.x,270f,transform.rotation.z);
-                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation,Time.deltaTime*rotSpeed);
-            }
+            #region PlayerRotRoughWork
+        // private float animationSpeed = 1f;
+        // [SerializeField] private float rotSpeed = 5f;
+            // if(moveInput.x > 0)
+            // {
+            //     Quaternion targetRotation = Quaternion.Euler(transform.rotation.x,90f,transform.rotation.z);
+            //     transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation,Time.deltaTime*rotSpeed);   
+            // }
+            // else if(moveInput.x < 0)
+            // {
+            //     Quaternion targetRotation = Quaternion.Euler(transform.rotation.x,270f,transform.rotation.z);
+            //     transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation,Time.deltaTime*rotSpeed);
+            // }
+             #endregion
             if(moveInput.x == 0)
             {
-                animator.SetFloat("Movement",Mathf.Lerp(animator.GetFloat("Movement"),Mathf.Abs(moveInput.x),animationSpeed*Time.deltaTime));
+                animator.SetFloat("Movement",Mathf.Lerp(animator.GetFloat("Movement"),Mathf.Abs(moveInput.x),5f*Time.deltaTime));
             }
             else 
             {
-                animator.SetFloat("Movement",Mathf.Lerp(animator.GetFloat("Movement"),Mathf.Abs(moveInput.x),animationSpeed*Time.deltaTime));
+                animator.SetFloat("Movement",Mathf.Lerp(animator.GetFloat("Movement"),Mathf.Abs(moveInput.x),3f*Time.deltaTime));
             }
-            // if(isRolling)
-            // {
-                
-            // }
+            
         }
         private void Shoot()
         {
@@ -179,22 +180,27 @@ namespace ExtractionAgent.Player
         }
 
         private bool IsGrounded()
-        {
-            
-            return Physics.Raycast(transform.position, Vector3.down, offsetRaycast);
+        { 
+            return Physics.Raycast(transform.position, Vector3.down, 1f);
         }
-        public void SetDir(float dir)
+        public float rotationSpeed = 5f;
+
+        void RotatePlayer()
         {
-            if(dir > 0)
+
+            Ray  ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
+           if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                Quaternion targetRotation = Quaternion.Euler(transform.rotation.x,90f,transform.rotation.z);
-                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation,Time.deltaTime*rotSpeed);   
-            }
-            else if(dir < 0)
-            {
-                Quaternion targetRotation = Quaternion.Euler(transform.rotation.x,270f,transform.rotation.z);
-                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation,Time.deltaTime*rotSpeed);
+                Vector3 targetDirection = hit.point - transform.position;
+                targetDirection.y = 0; // Only rotate on the y-axis
+
+                if (targetDirection != Vector3.zero)
+                {
+                    Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+                }
             }
         }
+        
     }
 }
