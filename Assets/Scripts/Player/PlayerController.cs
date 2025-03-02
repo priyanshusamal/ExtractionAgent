@@ -73,12 +73,12 @@ namespace ExtractionAgent.Player
             MovePlayer();
             HandleJump();
             PlayerAnimations();
+            RotatePlayer();
         }
         private void Update()
         {
             SlowMotion();
             isGrounded = IsGrounded();
-            RotatePlayer();
         }
 
         private void SlowMotion()
@@ -91,6 +91,9 @@ namespace ExtractionAgent.Player
             {
                 Time.timeScale = 1f;
             }
+            
+        
+            
         }
         private void MovePlayer()
         {
